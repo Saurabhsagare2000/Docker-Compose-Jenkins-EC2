@@ -32,8 +32,8 @@ pipeline {
         stage('Docker Build') {
             steps {
                 sh '''
-                docker build -t frontend-app ./frontend
-                docker build -t springboot-demo ./backend
+                docker build -t frontend-app ./Frontend
+                docker build -t springboot-demo ./Backend
                 '''
             }
         }
