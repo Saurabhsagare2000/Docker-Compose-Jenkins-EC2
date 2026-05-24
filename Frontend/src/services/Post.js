@@ -2,7 +2,7 @@ import { myAxios, privateAxios } from "./helper";
 
 // Create Post
 export const DataPost = (PostData) => {
-  console .log("Post data is at", PostData);
+  console.log("Post data is at", PostData);
   return privateAxios
     .post(
       `/user/${PostData.userId}/category/${PostData.categoryId}/posts`,

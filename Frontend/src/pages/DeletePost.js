@@ -14,7 +14,7 @@ export default function DeletePost() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   const loadData = () => {
     usersPost(id)
