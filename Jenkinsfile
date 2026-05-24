@@ -4,7 +4,7 @@ pipeline {
 
     environment {
         AWS_REGION = 'ap-south-1'
-        ACCOUNT_ID = '882321772634it'
+        ACCOUNT_ID = '882321772634'
         FRONTEND = 'frontend-app'
         BACKEND = 'springboot-demo'
         CI = "false"
@@ -41,10 +41,10 @@ pipeline {
         stage('ECR Login') {
             steps {
                 sh '''
-                aws ecr get-login-password --region ap-south-1 \
+                aws ecr get-login-password --region ${AWS_REGION} \
                 | docker login \
                 --username AWS \
-                --password-stdin ${ACCOUNT_ID}.dkr.ecr.ap-south-1.amazonaws.com
+                --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
                 '''
             }
         }
@@ -52,13 +52,19 @@ pipeline {
         stage('Push Images') {
             steps {
                 sh '''
-                docker tag frontend-app:latest ${ACCOUNT_ID}.dkr.ecr.ap-south-1.amazonaws.com/frontend-app:latest
-                docker push ${ACCOUNT_ID}.dkr.ecr.ap-south-1.amazonaws.com/frontend-app:latest
+                docker tag frontend-app:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/frontend-app:latest
+                docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/frontend-app:latest
 
-                docker tag springboot-demo:latest ${ACCOUNT_ID}.dkr.ecr.ap-south-1.amazonaws.com/springboot-demo:latest
-                docker push ${ACCOUNT_ID}.dkr.ecr.ap-south-1.amazonaws.com/springboot-demo:latest
+                docker tag springboot-demo:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/springboot-demo:latest
+                docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/springboot-demo:latest
                 '''
             }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
         }
     }
 }
