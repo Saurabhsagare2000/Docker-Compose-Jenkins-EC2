@@ -4,7 +4,7 @@ pipeline {
 
     environment {
         AWS_REGION = 'ap-south-1'
-        ACCOUNT_ID = '123456789'
+        ACCOUNT_ID = '882321772634it'
         FRONTEND = 'frontend-app'
         BACKEND = 'springboot-demo'
     }
