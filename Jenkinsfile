@@ -7,6 +7,7 @@ pipeline {
         ACCOUNT_ID = '882321772634it'
         FRONTEND = 'frontend-app'
         BACKEND = 'springboot-demo'
+        CI = "false"
     }
 
     stages {
