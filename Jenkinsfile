@@ -6,6 +6,7 @@ pipeline {
         AWS_REGION = 'ap-south-1'
         ACCOUNT_ID = '882321772634'
         REPO = 'springboot-demo'
+        CI='false'
     }
 
     stages {
