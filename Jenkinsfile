@@ -8,13 +8,14 @@ pipeline {
         FRONTEND = 'frontend-app'
         BACKEND = 'springboot-demo'
         DB = 'mysql-custom'
+        CI = "false"
     }
 
     stages {
 
         stage('Build Frontend') {
             steps {
-                dir('frontend') {
+                dir('Frontend') {
                     sh 'npm install'
                     sh 'npm run build'
                 }
@@ -23,7 +24,7 @@ pipeline {
 
         stage('Build Backend') {
             steps {
-                dir('backend') {
+                dir('Backend') {
                     sh 'mvn clean package'
                 }
             }
@@ -32,9 +33,9 @@ pipeline {
         stage('Docker Build') {
             steps {
                 sh '''
-                docker build -t frontend-app ./frontend
-                docker build -t springboot-demo ./backend
-                docker build -t mysql-custom ./mysql
+                docker build -t frontend-app ./Frontend
+                docker build -t springboot-demo ./Backend
+                docker build -t mysql-custom ./Mysql
                 '''
             }
         }
@@ -63,6 +64,12 @@ pipeline {
                 docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DB}:latest
                 '''
             }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
         }
     }
 }
