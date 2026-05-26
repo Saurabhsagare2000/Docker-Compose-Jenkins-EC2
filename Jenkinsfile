@@ -7,14 +7,14 @@ pipeline {
         ACCOUNT_ID = '882321772634'
         FRONTEND = 'frontend-app'
         BACKEND = 'springboot-demo'
-        CI = "false"
+        DB = 'mysql-custom'
     }
 
     stages {
 
         stage('Build Frontend') {
             steps {
-                dir('Frontend') {
+                dir('frontend') {
                     sh 'npm install'
                     sh 'npm run build'
                 }
@@ -23,7 +23,7 @@ pipeline {
 
         stage('Build Backend') {
             steps {
-                dir('Backend') {
+                dir('backend') {
                     sh 'mvn clean package'
                 }
             }
@@ -32,8 +32,9 @@ pipeline {
         stage('Docker Build') {
             steps {
                 sh '''
-                docker build -t frontend-app ./Frontend
-                docker build -t springboot-demo ./Backend
+                docker build -t frontend-app ./frontend
+                docker build -t springboot-demo ./backend
+                docker build -t mysql-custom ./mysql
                 '''
             }
         }
@@ -52,19 +53,16 @@ pipeline {
         stage('Push Images') {
             steps {
                 sh '''
-                docker tag frontend-app:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND}:frontend
-                docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND}:frontend
+                docker tag frontend-app:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${FRONTEND}:latest
+                docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${FRONTEND}:latest
 
-                docker tag springboot-demo:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND}:backend
-                docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND}:backend
+                docker tag springboot-demo:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND}:latest
+                docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND}:latest
+
+                docker tag mysql-custom:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DB}:latest
+                docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DB}:latest
                 '''
             }
-}
-    }
-
-    post {
-        always {
-            cleanWs()
         }
     }
 }
