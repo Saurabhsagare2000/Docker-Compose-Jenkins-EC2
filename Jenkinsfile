@@ -7,7 +7,6 @@ pipeline {
         ACCOUNT_ID = '882321772634'
         FRONTEND = 'frontend-app'
         BACKEND = 'springboot-demo'
-        DB = 'mysql-custom'
         CI = "false"
     }
 
@@ -35,7 +34,6 @@ pipeline {
                 sh '''
                 docker build -t frontend-app ./Frontend
                 docker build -t springboot-demo ./Backend
-                docker build -t mysql-custom ./Mysql
                 '''
             }
         }
@@ -54,17 +52,14 @@ pipeline {
         stage('Push Images') {
             steps {
                 sh '''
-                docker tag frontend-app:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${FRONTEND}:latest
-                docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${FRONTEND}:latest
+                docker tag frontend-app:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND}:frontend
+                docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND}:frontend
 
-                docker tag springboot-demo:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND}:latest
-                docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND}:latest
-
-                docker tag mysql-custom:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DB}:latest
-                docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DB}:latest
+                docker tag springboot-demo:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND}:backend
+                docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND}:backend
                 '''
             }
-        }
+}
     }
 
     post {
