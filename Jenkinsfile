@@ -11,10 +11,12 @@ pipeline {
     stages {
 
         stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/Saurabhsagare2000/Docker-Compose-Jenkins-EC2.git'
-            }
-        }
+    steps {
+        cleanWs()
+        checkout scm
+        sh 'ls -la'
+    }
+}
 
         stage('Debug Workspace') {
             steps {
