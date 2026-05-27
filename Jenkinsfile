@@ -76,7 +76,7 @@ pipeline {
                 docker compose pull
 
                 echo "Starting services..."
-                docker compose up -d --force-recreate
+                docker-compose up -d --force-recreate
                 '''
             }
         }
