@@ -10,8 +10,8 @@ services:
       MYSQL_DATABASE: blog_app
       MYSQL_USER: admin
       MYSQL_PASSWORD: password
-    ports:
-      - "3306:3306"
+    expose:
+      - "3306"
     networks:
       - app-network
     healthcheck:
