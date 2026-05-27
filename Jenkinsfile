@@ -52,8 +52,8 @@ pipeline {
                 sh '''
                 echo "Building Docker images..."
 
-                docker build -t frontend-app ./frontend
-                docker build -t springboot-demo ./backend
+                docker build -t frontend-app ./Frontend
+                docker build -t springboot-demo ./Backend
                 '''
             }
         }
@@ -89,10 +89,10 @@ pipeline {
             steps {
                 sh '''
                 echo "Stopping old containers..."
-                docker compose down || true
+                docker-compose down || true
 
                 echo "Starting services..."
-                docker compose up -d --force-recreate
+                docker-compose up -d --force-recreate
                 '''
             }
         }
