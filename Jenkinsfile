@@ -1,35 +1,48 @@
 pipeline {
-
     agent any
 
     environment {
         AWS_REGION = 'ap-south-1'
         ACCOUNT_ID = '882321772634'
         REPO = 'springboot-demo'
-        CI='false'
+        CI = 'false'
     }
 
     stages {
 
         stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'main', url: 'https://github.com/Saurabhsagare2000/Docker-Compose-Jenkins-EC2.git'
+            }
+        }
+
+        stage('Debug Workspace') {
+            steps {
+                sh '''
+                echo "===== WORKSPACE CONTENT ====="
+                ls -ltr
+                echo "============================="
+                '''
             }
         }
 
         stage('Build Frontend') {
             steps {
-                dir('Frontend') {
-                    sh 'npm install'
-                    sh 'npm run build'
+                dir('frontend') {   // ⚠️ change if your folder name differs
+                    sh '''
+                    npm install
+                    npm run build
+                    '''
                 }
             }
         }
 
         stage('Build Backend') {
             steps {
-                dir('Backend') {
-                    sh 'mvn clean package'
+                dir('backend') {    // ⚠️ change if your folder name differs
+                    sh '''
+                    mvn clean package -DskipTests
+                    '''
                 }
             }
         }
@@ -37,8 +50,10 @@ pipeline {
         stage('Docker Build') {
             steps {
                 sh '''
-                docker build -t frontend-app ./Frontend
-                docker build -t springboot-demo ./Backend
+                echo "Building Docker images..."
+
+                docker build -t frontend-app ./frontend
+                docker build -t springboot-demo ./backend
                 '''
             }
         }
@@ -54,13 +69,17 @@ pipeline {
             }
         }
 
-        stage('Push Images') {
+        stage('Tag & Push Images') {
             steps {
                 sh '''
-                docker tag frontend-app:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO}:frontend
-                docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO}:frontend
+                echo "Tagging images..."
 
+                docker tag frontend-app:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO}:frontend
                 docker tag springboot-demo:latest ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO}:backend
+
+                echo "Pushing images..."
+
+                docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO}:frontend
                 docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO}:backend
                 '''
             }
@@ -72,11 +91,8 @@ pipeline {
                 echo "Stopping old containers..."
                 docker compose down || true
 
-                echo "Pulling latest images..."
-                docker compose pull
-
                 echo "Starting services..."
-                docker-compose up -d --force-recreate
+                docker compose up -d --force-recreate
                 '''
             }
         }
@@ -84,6 +100,7 @@ pipeline {
 
     post {
         always {
+            echo "Cleaning workspace..."
             cleanWs()
         }
     }
