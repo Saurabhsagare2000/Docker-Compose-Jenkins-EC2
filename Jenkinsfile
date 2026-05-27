@@ -28,7 +28,7 @@ pipeline {
 
         stage('Build Frontend') {
             steps {
-                dir('frontend') {   // ⚠️ change if your folder name differs
+                dir('Frontend') {   // ⚠️ change if your folder name differs
                     sh '''
                     npm install
                     npm run build
@@ -39,7 +39,7 @@ pipeline {
 
         stage('Build Backend') {
             steps {
-                dir('backend') {    // ⚠️ change if your folder name differs
+                dir('Backend') {    // ⚠️ change if your folder name differs
                     sh '''
                     mvn clean package -DskipTests
                     '''
