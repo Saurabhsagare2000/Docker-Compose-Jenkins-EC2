@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
 
   mysql:
@@ -8,14 +10,26 @@ services:
       MYSQL_DATABASE: blog_app
       MYSQL_USER: admin
       MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   backend:
     image: 882321772634.dkr.ecr.ap-south-1.amazonaws.com/springboot-demo:backend
     container_name: backend-container
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/blog_app
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: password
     ports:
       - "8081:8080"
     networks:
@@ -37,8 +51,8 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - frontend
       - backend
+      - frontend
     networks:
       - app-network
 
